@@ -5,41 +5,51 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
 
     <title>Todo App</title>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
     <link rel="stylesheet" href="style.css" />
     <script defer src="main.js"></script>
   </head>
   <body>
     <div class="container">
-        <div class="color-mode">
-            <ion-icon name="sunny-outline" class="sun active"></ion-icon>
-            <ion-icon name="moon-outline" class="moon"></ion-icon>
-        </div>
       <div class="todo__header">
+        <div class="color-mode">
+          <ion-icon name="sunny-outline" class="sun active"></ion-icon>
+          <ion-icon name="moon-outline" class="moon"></ion-icon>
+        </div>
         <h1 class="todo__title">Todo:</h1>
         <form action="" id="form">
-            
-                <input type="text" placeholder="Todo" class="todo__input" id="input" />
+          <input
+            type="text"
+            placeholder="Todo"
+            class="todo__input"
+            id="input"
+          />
 
-                
-                <button class="btn btn--add" id="add">
-                
-           
+          <button class="btn btn--add" id="add">
+            <ion-icon name="add-circle-outline" class="icon"></ion-icon>
+          </button>
+          <button class="btn btn--remove" id="removeAll">X</button>
         </form>
-          <ion-icon name="add-circle-outline" class="icon"></ion-icon>
-        </button>
       </div>
       <div class="todo__body">
-        <ul class="todo__list">
-            
-        </ul>
+        <ul class="todo__list"></ul>
       </div>
     </div>
+    <div class="notifications"></div>
   </body>
 </html>
