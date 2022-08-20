@@ -5,9 +5,6 @@
   --clr-secondary-800: #212529;
   --clr-secondary-900: hsl(216, 53%, 9%);
 
-  --clr-accent-400: hsl(176, 68%, 64%);
-  --clr-accent-600: hsl(198, 60%, 50%);
-
   --bg-primary: var(--clr-secondary-800);
   --bg-secondary: var(--clr-secondary-600);
   --text: var(--clr-primary-400);
@@ -121,6 +118,7 @@ body.light .moon {
   background-color: var(--bg-container);
   overflow: hidden;
   padding-bottom: 3rem;
+  border-bottom: 1px solid var(--gray-1);
   transition: all var(--color-mode-speed);
 }
 
@@ -180,7 +178,7 @@ body.light .moon {
   --color: var(--clr-correct);
 }
 .btn--done {
-  --color: var(--clr-medium);
+  --color: var(--clr-correct);
   margin-right: 0.5rem;
 }
 
@@ -219,19 +217,20 @@ body.light .moon {
 
 .todo__text {
   margin-right: auto;
-  transition: all 0.2s;
 }
 .todo__item.doneTask .todo__text {
   text-decoration: line-through;
-  color: var(--clr-medium);
+  color: var(--clr-correct);
 }
 
 /* Error */
 
 .notifications {
   position: absolute;
-  bottom: 5vh;
-  right: 5vh;
+  width: 20rem;
+  min-height: 10rem;
+  bottom: 5rem;
+  right: 5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -240,8 +239,8 @@ body.light .moon {
 .error,
 .done,
 .added,
-.removeAll,
-.remove {
+.remove,
+.unmarked {
   --text-color: white;
 
   width: 20rem;
@@ -260,18 +259,19 @@ body.light .moon {
 }
 
 .error,
-.removeAll,
-.remove {
+.remove,
+.unmarked {
   color: var(--text-color);
   text-align: center;
   background-color: var(--clr-error);
 }
 
-.done {
+.unmarked {
   background-color: var(--clr-medium);
 }
 
-.added {
+.added,
+.done {
   background-color: var(--clr-correct);
 }
 

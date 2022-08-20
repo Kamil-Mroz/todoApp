@@ -11,8 +11,9 @@ const notificationsEl = document.querySelector(".notifications");
 
 let dane;
 let todo = {
-  todoArr: [],
+  todoObject: {},
   isLight: false,
+  isMarked: [],
 };
 
 init();
@@ -22,33 +23,36 @@ function init() {
 
   if (todo["isLight"]) body.classList.add("light");
 
-  todo.todoArr = getLocalStorage("todoArr");
+  todo.todoObject = getLocalStorage("todoObject");
 
-  if (!todo.todoArr) return (todo.todoArr = []);
-  todo["todoArr"].forEach((element) => {
-    render(element);
-  });
+  if (!todo.todoObject) return (todo.todoObject = {});
+
+  for (const [id, marked] of Object.entries(todo.todoObject)) {
+    render(id, marked);
+  }
 }
 
 btnRemove.addEventListener("click", function () {
-  dane = getLocalStorage("todoArr");
-  if (!dane) return;
+  dane = getLocalStorage("todoObject");
+  const isEmpty = Object.keys(dane).length === 0;
+  if (!dane || isEmpty) return;
 
   if (!confirm("Are you sure you want to remove all your tasks?")) {
     return;
   }
 
-  localStorage.removeItem("todoArr");
+  localStorage.removeItem("todoObject");
   window.location.reload(true);
 });
 
 formEl.addEventListener("submit", function (e) {
   e.preventDefault();
+  const data = inputEl.value;
 
-  if (!inputEl.value) {
+  if (!data || !isNaN(+data)) {
+    inputEl.value = "";
     return displayNotifications("error");
   }
-  const data = inputEl.value;
 
   inputEl.value = "";
 
@@ -56,9 +60,9 @@ formEl.addEventListener("submit", function (e) {
 
   displayNotifications("added");
 
-  todo["todoArr"].push(data);
+  todo.todoObject[`${data}`] = false;
 
-  setLocalStorage("todoArr", todo.todoArr);
+  setLocalStorage("todoObject", todo.todoObject);
 });
 
 function setLocalStorage(item, save) {
@@ -77,19 +81,22 @@ colorMode.addEventListener("click", function () {
   setLocalStorage("colorTheme", todo["isLight"]);
 });
 
-function displayNotifications(action) {
+function displayNotifications(action, variable = true) {
   const text = {
     added: "Added activity",
-    done: "Finished successfully",
+    done: "Taks completed",
     error: "Enter an input value",
     removeAll: "Removed all tasks",
     remove: "Task removed",
+    unmarked: "Taks unmarked",
   };
 
   const notify = document.createElement("div");
 
+  if (!variable) action = "unmarked";
   notify.classList.add(action);
   notify.innerText = text[action];
+
   notificationsEl.appendChild(notify);
 
   setTimeout(() => {
@@ -97,9 +104,9 @@ function displayNotifications(action) {
   }, 4000);
 }
 
-function render(data) {
+function render(data, marked) {
   const text = `
-    <li class="todo__item ">
+    <li class="todo__item ${marked ? "doneTask" : ""}">
     <span class="todo__text">${data}</span>
     <button class="btn btn--done " id="done">
     <ion-icon name="checkmark-circle-outline"></ion-icon>
@@ -115,18 +122,31 @@ list.addEventListener("click", function (e) {
   e.preventDefault();
   if (!list.children.length) return;
   const el = e.target;
+  const text = el.closest(".todo__item").innerText;
   const btn = el.closest(".btn");
 
   if (!btn) return;
-  if (btn.classList.contains("btn--done")) done(el.closest(".todo__item"));
+  if (btn.classList.contains("btn--done"))
+    done(el.closest(".todo__item"), text);
 
   if (btn.classList.contains("btn--delete")) {
     el.closest(".todo__item").remove();
     displayNotifications("remove");
+    todo.todoObject = getLocalStorage("todoObject");
+    delete todo.todoObject[text];
+
+    setLocalStorage("todoObject", todo.todoObject);
   }
 });
 
-function done(li) {
+function done(li, id) {
   li.classList.toggle("doneTask");
-  displayNotifications("done");
+  todo.todoObject = getLocalStorage("todoObject");
+
+  todo.todoObject[id]
+    ? (todo.todoObject[id] = false)
+    : (todo.todoObject[id] = true);
+
+  displayNotifications("done", todo.todoObject[id]);
+  setLocalStorage("todoObject", todo.todoObject);
 }
