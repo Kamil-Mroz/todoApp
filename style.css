@@ -237,7 +237,8 @@ body.light .moon {
 
 .error,
 .done,
-.added {
+.added,
+.removeAll {
   --text-color: white;
 
   width: 20rem;
@@ -255,7 +256,8 @@ body.light .moon {
   animation: fadeOut 3s forwards;
 }
 
-.error {
+.error,
+.removeAll {
   color: var(--text-color);
   text-align: center;
   background-color: var(--clr-error);

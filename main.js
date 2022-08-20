@@ -2,6 +2,7 @@ const inputEl = document.getElementById("input");
 const btnAdd = document.getElementById("add");
 const btnDone = document.getElementById("done");
 const btnDelete = document.getElementById("delete");
+const btnRemove = document.getElementById("removeAll");
 const colorMode = document.querySelector(".color-mode");
 const list = document.querySelector(".todo__list");
 const formEl = document.getElementById("form");
@@ -9,18 +10,37 @@ const body = document.body;
 const notificationsEl = document.querySelector(".notifications");
 
 let dane;
-let todo = [];
+let todo = {
+  todoArr: [],
+  isLight: false,
+};
+
 init();
 
 function init() {
-  dane = getLocalStorage();
+  todo["isLight"] = getLocalStorage("colorTheme");
 
-  if (!dane) return;
-  todo = dane;
-  todo.forEach((element) => {
+  if (todo["isLight"]) body.classList.add("light");
+
+  todo.todoArr = getLocalStorage("todoArr");
+
+  if (!todo.todoArr) return (todo.todoArr = []);
+  todo["todoArr"].forEach((element) => {
     render(element);
   });
 }
+
+btnRemove.addEventListener("click", function () {
+  dane = getLocalStorage("todoArr");
+  if (!dane) return;
+
+  if (!confirm("Are you sure you want to remove all your tasks?")) {
+    return;
+  }
+
+  localStorage.removeItem("todoArr");
+  window.location.reload(true);
+});
 
 formEl.addEventListener("submit", function (e) {
   e.preventDefault();
@@ -36,21 +56,25 @@ formEl.addEventListener("submit", function (e) {
 
   displayNotifications("added");
 
-  todo.push(data);
+  todo["todoArr"].push(data);
 
-  setLocalStorage();
+  setLocalStorage("todoArr", todo.todoArr);
 });
 
-function setLocalStorage() {
-  localStorage.setItem("todo", JSON.stringify(todo));
+function setLocalStorage(item, save) {
+  localStorage.setItem(item, JSON.stringify(save));
 }
 
-function getLocalStorage() {
-  return JSON.parse(localStorage.getItem("todo"));
+function getLocalStorage(item) {
+  return JSON.parse(localStorage.getItem(item));
 }
 
 colorMode.addEventListener("click", function () {
-  document.body.classList.toggle("light");
+  body.classList.toggle("light");
+  todo["isLight"] = todo["isLight"]
+    ? (todo["isLight"] = false)
+    : (todo["isLight"] = true);
+  setLocalStorage("colorTheme", todo["isLight"]);
 });
 
 function displayNotifications(action) {
@@ -58,14 +82,13 @@ function displayNotifications(action) {
     added: "Added activity",
     done: "Finished successfully",
     error: "Enter an input value",
+    removeAll: "Removed all tasks",
   };
 
   const notify = document.createElement("div");
-  const message =
-    action === "added" ? "added" : action === "error" ? "error" : action;
 
   notify.classList.add(action);
-  notify.innerText = text[message];
+  notify.innerText = text[action];
   notificationsEl.appendChild(notify);
 
   setTimeout(() => {
