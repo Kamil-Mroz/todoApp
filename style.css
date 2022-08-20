@@ -219,9 +219,11 @@ body.light .moon {
 
 .todo__text {
   margin-right: auto;
+  transition: all 0.2s;
 }
-.todo__item.done .todo__text {
+.todo__item.doneTask .todo__text {
   text-decoration: line-through;
+  color: var(--clr-medium);
 }
 
 /* Error */
@@ -238,7 +240,8 @@ body.light .moon {
 .error,
 .done,
 .added,
-.removeAll {
+.removeAll,
+.remove {
   --text-color: white;
 
   width: 20rem;
@@ -257,7 +260,8 @@ body.light .moon {
 }
 
 .error,
-.removeAll {
+.removeAll,
+.remove {
   color: var(--text-color);
   text-align: center;
   background-color: var(--clr-error);

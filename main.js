@@ -83,6 +83,7 @@ function displayNotifications(action) {
     done: "Finished successfully",
     error: "Enter an input value",
     removeAll: "Removed all tasks",
+    remove: "Task removed",
   };
 
   const notify = document.createElement("div");
@@ -100,7 +101,7 @@ function render(data) {
   const text = `
     <li class="todo__item ">
     <span class="todo__text">${data}</span>
-    <button class="btn btn--done" id="done">
+    <button class="btn btn--done " id="done">
     <ion-icon name="checkmark-circle-outline"></ion-icon>
     </button>
     <button class="btn btn--delete" id="delete">
@@ -108,4 +109,24 @@ function render(data) {
     </button>
     </li>`;
   list.insertAdjacentHTML("afterbegin", text);
+}
+
+list.addEventListener("click", function (e) {
+  e.preventDefault();
+  if (!list.children.length) return;
+  const el = e.target;
+  const btn = el.closest(".btn");
+
+  if (!btn) return;
+  if (btn.classList.contains("btn--done")) done(el.closest(".todo__item"));
+
+  if (btn.classList.contains("btn--delete")) {
+    el.closest(".todo__item").remove();
+    displayNotifications("remove");
+  }
+});
+
+function done(li) {
+  li.classList.toggle("doneTask");
+  displayNotifications("done");
 }
