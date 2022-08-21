@@ -240,6 +240,7 @@ body.light .moon {
 .done,
 .added,
 .remove,
+.removeAll,
 .unmarked {
   --text-color: white;
 
@@ -260,7 +261,8 @@ body.light .moon {
 
 .error,
 .remove,
-.unmarked {
+.unmarked,
+.removeAll {
   color: var(--text-color);
   text-align: center;
   background-color: var(--clr-error);
@@ -286,13 +288,3 @@ body.light .moon {
     opacity: 0;
   }
 }
-
-/*
---- 01 TYPOGRAPHY SYSTEM
-
-- Font sizes (px)
-10 / 12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 44 / 52 / 62 / 74 / 86 / 98
-
-- Spacing system (px)
-2 / 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96 / 128
-*/ ;

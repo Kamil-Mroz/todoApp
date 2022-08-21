@@ -9,100 +9,35 @@ const formEl = document.getElementById("form");
 const body = document.body;
 const notificationsEl = document.querySelector(".notifications");
 
-let dane;
-let todo = {
-  todoObject: {},
-  isLight: false,
-  isMarked: [],
-};
-
 init();
 
 function init() {
-  todo["isLight"] = getLocalStorage("colorTheme");
+  todo = {
+    todoObject: {},
+    isLight: false,
+  };
 
-  if (todo["isLight"]) body.classList.add("light");
+  todo = getLocalStorage("todo");
 
-  todo.todoObject = getLocalStorage("todoObject");
+  if (!todo)
+    return (todo = {
+      todoObject: {},
+      isLight: false,
+    });
 
-  if (!todo.todoObject) return (todo.todoObject = {});
+  checkTheme();
 
   for (const [id, marked] of Object.entries(todo.todoObject)) {
     render(id, marked);
   }
 }
+colorMode.addEventListener("click", ChangeTheme);
 
-btnRemove.addEventListener("click", function () {
-  dane = getLocalStorage("todoObject");
-  const isEmpty = Object.keys(dane).length === 0;
-  if (!dane || isEmpty) return;
+formEl.addEventListener("submit", formInteraction);
 
-  if (!confirm("Are you sure you want to remove all your tasks?")) {
-    return;
-  }
+list.addEventListener("click", itemInteraction);
 
-  localStorage.removeItem("todoObject");
-  window.location.reload(true);
-});
-
-formEl.addEventListener("submit", function (e) {
-  e.preventDefault();
-  const data = inputEl.value;
-
-  if (!data || !isNaN(+data)) {
-    inputEl.value = "";
-    return displayNotifications("error");
-  }
-
-  inputEl.value = "";
-
-  render(data);
-
-  displayNotifications("added");
-
-  todo.todoObject[`${data}`] = false;
-
-  setLocalStorage("todoObject", todo.todoObject);
-});
-
-function setLocalStorage(item, save) {
-  localStorage.setItem(item, JSON.stringify(save));
-}
-
-function getLocalStorage(item) {
-  return JSON.parse(localStorage.getItem(item));
-}
-
-colorMode.addEventListener("click", function () {
-  body.classList.toggle("light");
-  todo["isLight"] = todo["isLight"]
-    ? (todo["isLight"] = false)
-    : (todo["isLight"] = true);
-  setLocalStorage("colorTheme", todo["isLight"]);
-});
-
-function displayNotifications(action, variable = true) {
-  const text = {
-    added: "Added activity",
-    done: "Taks completed",
-    error: "Enter an input value",
-    removeAll: "Removed all tasks",
-    remove: "Task removed",
-    unmarked: "Taks unmarked",
-  };
-
-  const notify = document.createElement("div");
-
-  if (!variable) action = "unmarked";
-  notify.classList.add(action);
-  notify.innerText = text[action];
-
-  notificationsEl.appendChild(notify);
-
-  setTimeout(() => {
-    notify.remove();
-  }, 4000);
-}
+btnRemove.addEventListener("click", removeAllItems);
 
 function render(data, marked) {
   const text = `
@@ -115,38 +50,121 @@ function render(data, marked) {
     <ion-icon name="trash-outline" class="icon"></ion-icon>
     </button>
     </li>`;
+
   list.insertAdjacentHTML("afterbegin", text);
 }
 
-list.addEventListener("click", function (e) {
+function formInteraction(e) {
   e.preventDefault();
-  if (!list.children.length) return;
-  const el = e.target;
-  const text = el.closest(".todo__item").innerText;
-  const btn = el.closest(".btn");
 
+  const data = inputEl.value;
+
+  if (!data || !isNaN(+data)) {
+    inputEl.value = "";
+    return displayMessage("error");
+  }
+
+  inputEl.value = "";
+
+  render(data);
+
+  displayMessage("added");
+
+  todo.todoObject[`${data}`] = false;
+
+  setLocalStorage("todo", todo);
+}
+
+function itemInteraction(e) {
+  e.preventDefault();
+
+  const el = e.target;
+  const id = el.closest(".todo__item").innerText;
+
+  const btn = el.closest(".btn");
   if (!btn) return;
-  if (btn.classList.contains("btn--done"))
-    done(el.closest(".todo__item"), text);
+
+  if (btn.classList.contains("btn--done")) completed(el, id);
 
   if (btn.classList.contains("btn--delete")) {
-    el.closest(".todo__item").remove();
-    displayNotifications("remove");
-    todo.todoObject = getLocalStorage("todoObject");
-    delete todo.todoObject[text];
-
-    setLocalStorage("todoObject", todo.todoObject);
+    deleteItem(el, id);
   }
-});
+}
 
-function done(li, id) {
-  li.classList.toggle("doneTask");
-  todo.todoObject = getLocalStorage("todoObject");
+function removeAllItems() {
+  todo = getLocalStorage("todo");
+  const isEmpty = Object.keys(todo.todoObject).length === 0;
+  if (!todo || isEmpty) return;
 
-  todo.todoObject[id]
-    ? (todo.todoObject[id] = false)
-    : (todo.todoObject[id] = true);
+  if (!confirm("Are you sure you want to remove all your tasks?")) {
+    return;
+  }
 
-  displayNotifications("done", todo.todoObject[id]);
-  setLocalStorage("todoObject", todo.todoObject);
+  list.innerHTML = "";
+  todo.todoObject = {};
+  displayMessage("removeAll");
+  setLocalStorage("todo", todo);
+}
+
+function deleteItem(el, id) {
+  el.closest(".todo__item").remove();
+  displayMessage("remove");
+  todo = getLocalStorage("todo");
+  delete todo.todoObject[id];
+
+  setLocalStorage("todo", todo);
+}
+
+function completed(el, id) {
+  el.closest(".todo__item").classList.toggle("doneTask");
+  todo = getLocalStorage("todo");
+
+  todo.todoObject[id] = !todo.todoObject[id];
+
+  displayMessage("done", todo.todoObject[id]);
+  setLocalStorage("todo", todo);
+}
+
+function displayMessage(action, variable = true) {
+  const notifications = {
+    added: "Added activity",
+    done: "Taks completed",
+    error: "Enter an input value",
+    removeAll: "Removed all tasks",
+    remove: "Task removed",
+    unmarked: "Taks unmarked",
+  };
+
+  const popup = document.createElement("div");
+
+  if (!variable) action = "unmarked";
+  popup.classList.add(action);
+  popup.innerText = notifications[action];
+
+  notificationsEl.appendChild(popup);
+
+  setTimeout(() => {
+    popup.remove();
+  }, 4000);
+}
+
+function checkTheme() {
+  todo = getLocalStorage("todo");
+  if (todo["isLight"]) body.classList.add("light");
+}
+
+function ChangeTheme() {
+  body.classList.toggle("light");
+  todo["isLight"] = todo["isLight"]
+    ? (todo["isLight"] = false)
+    : (todo["isLight"] = true);
+  setLocalStorage("todo", todo);
+}
+
+function setLocalStorage(item, save) {
+  localStorage.setItem(item, JSON.stringify(save));
+}
+
+function getLocalStorage(item) {
+  return JSON.parse(localStorage.getItem(item));
 }

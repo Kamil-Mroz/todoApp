@@ -1,1 +1,1 @@
-A simple todo App
+A Todo App
