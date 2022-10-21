@@ -15,7 +15,7 @@
   --bg-container: var(--bg-secondary);
   --text-color: var(--text);
 
-  --ff-primary: "Open Sans", sans-serif;
+  --ff-primary: 'Open Sans', sans-serif;
   --box-shadow: 0 0.4rem 0.9rem rgba(0, 0, 0, 0);
 
   --clr-correct: #51cf66;
@@ -47,7 +47,7 @@ body {
   font-family: var(--ff-primary);
   font-weight: 400;
   transition: all var(--color-mode-speed);
-  padding: 5rem 0;
+  padding: 3rem 0 1rem;
 }
 
 body.light {
